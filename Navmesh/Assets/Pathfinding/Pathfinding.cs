@@ -63,10 +63,6 @@ public class Pathfinding : MonoBehaviour
 
         bool targetFound = false;
 
-        int maxLoop = 1000;
-
-        // int test = 0;
-
         while (_openList.Count > 0)
         {
             _openList.Remove(currentNode);
@@ -74,21 +70,12 @@ public class Pathfinding : MonoBehaviour
             // En caso de que la celda start, sea el mismo target
             targetFound = RevealNeighbours(currentNode, targetNode) || currentNode.Index == targetNode.Index;
 
-            maxLoop--;
-
-            if (maxLoop <= 0)
-            {
-                Debug.LogWarning("Loop has reached the max ammount of iterations");
-                break;
-            }
-
             if (!targetFound)
             {
                 PathNode nextNode = GetLowestFNode();
                 currentNode = nextNode;
             }
             else break;
-            // test++;
         }
 
         if (targetFound)
@@ -118,6 +105,8 @@ public class Pathfinding : MonoBehaviour
 
     private PathNode GetLowestFNode()
     {
+        if (_openList.Count <= 0) return default;
+
         PathNode lowestCostNode = _openList[0];
 
         for (int i = 1; i < _openList.Count; i++)
@@ -198,8 +187,6 @@ public class Pathfinding : MonoBehaviour
         {
             if (_closedList.Contains(n) || !n.isWalkable) { continue; }
 
-            _tiles[n.Index.x, n.Index.y].GetComponent<SpriteRenderer>().color = Color.blue;
-
             int gCostFromCurrent = currentNode.gCost + GetDistance(currentNode, n);
 
             if (gCostFromCurrent < n.gCost)
@@ -210,6 +197,7 @@ public class Pathfinding : MonoBehaviour
                 newValues.CalculateFCost();
                 newValues.lastNodeIndex = currentNode.Index;
 
+                // _tiles[n.Index.x, n.Index.y].GetComponent<SpriteRenderer>().color = Color.blue;
                 _grid.SetValue(n.Index.x, n.Index.y, newValues);
                 if (!_openList.Contains(newValues)) _openList.Add(newValues);
             }
